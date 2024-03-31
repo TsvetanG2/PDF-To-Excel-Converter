@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel Converter</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+<h1>PDF to Excel Converter</h1>
+
+<div class="container">
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="pdfFile" class="custom-file-upload">Choose a PDF file</label>
+        <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required>
+        <br>
+
+        <p>Select processing option:</p>
+        <input type="radio" id="allText" name="processingOption" value="allText" checked>
+        <label for="allText">PDF Text + Tables</label>
+
+        <input type="radio" id="tablesOnly" name="processingOption" value="tablesOnly">
+        <label for="tablesOnly">Only PDF Tables</label>
+
+        <br>
+        <button type="submit">Convert to Excel</button>
+    </form>
+</div>
+</body>
+</html>
