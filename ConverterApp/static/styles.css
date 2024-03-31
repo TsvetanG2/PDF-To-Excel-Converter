@@ -1,0 +1,169 @@
+/* static/styles.css */
+
+/* Global Styles */
+body {
+    font-family: Cursive , sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 50px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 60px;
+    background-color: #ffffff;
+    border: solid black;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+form {
+    text-align: center;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 5px;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 30px;
+    color: #ffffff;
+    background-color: #158a9a;
+    border: 3px solid #06516c;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-file-upload:hover {
+    background-color: #0c6557;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+button[type="submit"] {
+    display: block;
+    margin-top: 25px;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 20px;
+    font-size: 30px;
+    color: #fff;
+    background-color: #70a10a;
+    border: 3px solid #435d07;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #136527;
+}
+
+/* Download Page Styles */
+p {
+    text-align: center;
+    font-size: 30px;
+}
+
+.btn-container {
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 20px;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary,
+.btn-secondary {
+    display: compact;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+.btn-primary {
+    background-color: #28a745;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+}
+
+.btn-secondary {
+    background-color: #007bff;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"] + label {
+    position: relative;
+    padding-left: 33px;
+    padding-right: 25px;
+    cursor: context-menu;
+    font-size: 21px;
+}
+
+input[type="radio"] + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 25px;
+    height: 15px;
+    border: 1px solid #605e5e;
+    border-radius: 50%;
+    padding: 1px;
+}
+
+input[type="radio"]:checked + label:before {
+    background-color: #a1a1a1;
+}
+
+input[type="radio"] + label:after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+}
+
+input[type="radio"]:checked + label:after {
+    transform: scale(1);
+}
