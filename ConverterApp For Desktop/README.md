@@ -31,6 +31,7 @@ The PDF to Excel Converter is designed to convert PDF files into Excel spreadshe
 
 ### Finding Your Files
 - **Uploaded PDFs and Converted Files:** These can be found in the "Uploads" folder, which will be created automatically if it doesn't exist.
+- App Directory -> _Internal -> Uploads
 
 ## Future Improvements
 - **Optimization for Larger Files:** Future updates will include optimizations for handling larger PDF files.
