@@ -1,22 +1,43 @@
-## You can find the Windows Installer for the app here:
+# PDF to Excel Converter
 
-Please keep in mind, that its version 0.1. Any feedpback will be appreciated.
+Welcome to the PDF to Excel Converter! This app is currently in its early stages (version 0.1). Any feedback is highly appreciated to help us improve the application.
 
-All the steps on how to find the converted files and the uploaded PDFs are in the "After Installation" steps.
+## Download Link
 
-## Information about the app:
-The app is currently an early version of what it should be.
-Once you run the app the console will be opened. I've made it this way so in case of any errors you can provide them here as a feedback.
+### Windows Installer:
+[![Download from Dropbox](https://img.shields.io/badge/Download-Dropbox-blue)](https://www.dropbox.com/scl/fo/n738jjke8k6798wk3m10a/APT6TlQ70rs1tfklzKAWjsM?rlkey=7eatbth7zfi4ovvln1kxnvr6r&st=nh4qecqf&dl=0)
 
-### What formats does the app support:
-Currently the app supports only PDF file and converts them to Excel.
-An optimization for larger files will be added soon.
+Please note: This is version 0.1 of the app.
 
-## How does the app work?
-Once you run the app it will open a host server on your device (Currently supported only for Windows), so it can run the web app.
-As the first idea of the app was it being a web application, I decided to continue with the idea and not re-write it for Windows.
-When you see the console, please give it a minute or two till the app window appears.
+## Information about the App
 
-## In case you skip the steps after installation!
-You can find all of the uploaded PDFs and converted files in folder "Uploads".
-The folder will be created automatically, in case it's missing from your system.
+### Overview
+The PDF to Excel Converter is designed to convert PDF files into Excel spreadsheets. This early version is functional but may still have some bugs and areas for improvement.
+
+### Supported Formats
+- **Input:** PDF
+- **Output:** Excel
+
+### How It Works
+1. **Run the App:** After running the app, a console window will open.
+   - This console provides real-time logs, which can be useful for debugging.
+   - Give it a minute or two for the app window to appear.
+   
+2. **Host Server:** The app will host a local server on your device (currently Windows-only) to run the web application.
+
+3. **User Interface:** The interface will allow you to upload PDF files and convert them to Excel.
+
+## After Installation
+
+### Finding Your Files
+- **Uploaded PDFs and Converted Files:** These can be found in the "Uploads" folder, which will be created automatically if it doesn't exist.
+
+## Future Improvements
+- **Optimization for Larger Files:** Future updates will include optimizations for handling larger PDF files.
+
+## Feedback
+Your feedback is crucial for us. If you encounter any errors, please report them along with the console logs.
+
+---
+
+Thank you for using the PDF to Excel Converter! We hope it makes your work easier and more efficient.
