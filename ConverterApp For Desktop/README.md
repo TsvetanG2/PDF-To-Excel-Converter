@@ -5,7 +5,7 @@ Welcome to the PDF to Excel Converter! This app is currently in its early stages
 ## Download Link
 
 ### Windows Installer:
-[![Download from Dropbox](https://img.shields.io/badge/Download-Dropbox-blue)](https://www.dropbox.com/scl/fo/n738jjke8k6798wk3m10a/APT6TlQ70rs1tfklzKAWjsM?rlkey=7eatbth7zfi4ovvln1kxnvr6r&st=nh4qecqf&dl=0)
+[![Download from Dropbox](https://www.dropbox.com/scl/fi/wf0yldysmdg1qwb92xtxi/PDFConverter-Setup.exe?rlkey=x8s45mnd2h0on617ne3mp1wvh&st=bjiaui1w&dl=0)
 
 Please note: This is version 0.1 of the app.
 
