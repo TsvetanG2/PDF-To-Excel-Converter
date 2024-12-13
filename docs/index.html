@@ -4,15 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to Excel Converter</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-    <h1>PDF to Excel Converter</h1>
+<h1>PDF to Excel Converter</h1>
     <p>Welcome to the PDF to Excel Converter. Follow the instructions to use the tool:</p>
-    <ol>
+    ol>
         <li>Clone the repository: <code>git clone https://github.com/TsvetanG2/PDF-To-Excel-Converter.git</code></li>
         <li>Install dependencies: <code>pip install -r requirements.txt</code></li>
         <li>Run the script: <code>python converter.py</code></li>
     </ol>
+
+<div class="container">
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="pdfFile" class="custom-file-upload">Choose a PDF file</label>
+        <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required>
+        <br>
+
+        <p>Select processing option:</p>
+        <input type="radio" id="allText" name="processingOption" value="allText" checked>
+        <label for="allText">PDF Text + Tables</label>
+
+        <input type="radio" id="tablesOnly" name="processingOption" value="tablesOnly">
+        <label for="tablesOnly">Only PDF Tables</label>
+
+        <br>
+        <button type="submit">Convert to Excel</button>
+    </form>
+</div>
 </body>
 </html>
