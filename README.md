@@ -84,6 +84,11 @@ Contributions are welcome! Please follow these steps to contribute:
 5. Push to the branch (`git push origin feature/yourfeature`).
 6. Create a new Pull Request.
 
+- **Documentation**: [docs/](docs/) folder
+- **Bug Reports**: [GitHub Issues](https://github.com/TsvetanG2/PDF-To-Excel-Converter/issues)
+- **Feature Requests**: [GitHub Discussions](https://github.com/TsvetanG2/PDF-To-Excel-Converter/discussions)
+- **Show Support**: Star the repository if you find it useful!
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](https://opensource.org/license/MIT) file for details.
