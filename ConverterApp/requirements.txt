@@ -1,0 +1,7 @@
+pdfplumber
+tabula-py
+openpyxl
+Werkzeug
+Flask
+PyMuPDF
+pandas
