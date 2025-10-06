@@ -58,7 +58,7 @@ The PDF to Excel Converter is a web application developed using Flask, a micro w
 1. Start the Flask server:
 
     ```bash
-    python app.py
+    python pdftoexcel.py
     ```
 
 2. Open your web browser and navigate to http://localhost:5000.
