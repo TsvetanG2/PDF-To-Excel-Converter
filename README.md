@@ -10,7 +10,6 @@ Convert PDF documents into Excel files effortlessly with this powerful PDF to Ex
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Demo](#demo)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -28,10 +27,6 @@ The PDF to Excel Converter is a web application developed using Flask, a micro w
 - Easy-to-use web interface for uploading PDF files.
 - Supports multiple processing options for different user needs.
 - Well-structured codebase for easy customization and extension.
-
-## Demo
-
-[Insert demo video or link to live demo if available]
 
 ## Installation
 
