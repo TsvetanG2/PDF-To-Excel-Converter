@@ -1,10 +1,22 @@
-# PDF to Excel Converter
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Description
+# PDF to Excel Converter
 
-Convert PDF documents into Excel files effortlessly with this powerful PDF to Excel converter built using Python and Flask.
+## Introduction
+
+<img width="754" height="631" alt="download" src="https://github.com/user-attachments/assets/146f145a-5bd7-45b8-9831-c300a0210c52" />
+
+#
+
+The pdf-to-excel-converter repository provides a web application designed to convert PDF documents into Excel spreadsheets. This application allows users to upload PDF files through a web interface and select specific conversion options, ultimately enabling them to download the processed data as an Excel file.
+
+The core functionality of the application is centered around two primary extraction modes:
+
+### All Text + Tables: 
+This mode extracts all textual content and tabular data from the PDF and consolidates it into a single Excel worksheet. This process involves merging diverse data types into a coherent output.
+### Tables Only: 
+This mode focuses exclusively on identifying and extracting tabular data from the PDF. Each detected table is then organized into a separate sheet within the generated Excel workbook. This is particularly useful for PDFs where structured data in tables is the main interest.
+Users interact with the application by navigating to the main page, where they can upload a PDF file and choose their preferred extraction mode. Upon submission, the application processes the PDF, extracts the relevant content, generates an Excel file, and then offers it for download. The web application handles the file upload, initiates the conversion process, and manages the delivery of the final Excel output. The overall architecture is built around a Flask web application, which orchestrates these operations. For more details on the web application's structure and workflow, see Flask Application Structure and Workflow.
 
 ## Table of Contents
 
@@ -15,10 +27,6 @@ Convert PDF documents into Excel files effortlessly with this powerful PDF to Ex
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
-
-## Introduction
-
-The PDF to Excel Converter is a web application developed using Flask, a micro web framework for Python. This application enables users to upload PDF files and convert them into Excel spreadsheets. It utilizes the pdfplumber and tabula-py libraries to extract textual content and tables from PDFs, then formats and exports them into Excel files.
 
 ## Features
 
