@@ -5,3 +5,4 @@ Werkzeug
 Flask
 PyMuPDF
 pandas
+gunicorn

@@ -56,35 +56,57 @@ def create_excel(text_content, table_data):
     current_row = 2
     max_row_position = 2
     table_data_used = set()
+
+    # PRECOMPUTE: Flatten tables to strings ONCE to prevent timeout loops
+    precomputed_tables = {}
+    for i, table in enumerate(table_data):
+        # Join all elements in a table into a single searchable string
+        precomputed_tables[i] = " ".join([" ".join(map(str, row)) for row in table])
+
     for line in text_lines:
-        line_in_table = any(line.strip() in " ".join([" ".join(map(str, row)) for row in table]) for table in table_data)
+        stripped_line = line.strip()
+        
+        # Minor optimization: Skip the heavy search for empty lines
+        if not stripped_line:
+            current_row += 1
+            continue
+
+        # Check if the line is part of any precomputed table
+        line_in_table = any(stripped_line in t_str for t_str in precomputed_tables.values())
+        
         if not line_in_table:
             ws.cell(row=current_row, column=1, value=line)
             current_row += 1
 
-        for table_index, table in enumerate(table_data):
-            table_row = " ".join([" ".join(map(str, row)) for row in table])
-            if line.strip() in table_row and table_index not in table_data_used:
-                table_cols = len(table[0])
+        # Write the table if the line matches and it hasn't been written yet
+        for table_index, t_str in precomputed_tables.items():
+            if stripped_line in t_str and table_index not in table_data_used:
+                table = table_data[table_index]
+                
                 for row_index, row_data in enumerate(table, start=current_row):
                     for col_index, value in enumerate(row_data, start=2):  # Start from column B
                         ws.cell(row=row_index, column=col_index, value=value)
+                
                 # Update max_row_position after writing the table
                 max_row_position = max(max_row_position, current_row + len(table) + 1)
+                
                 # Add the current table index to the table_data_used set
                 table_data_used.add(table_index)
+                
                 # Increment the current row position after writing the table
-                current_row += len(table) + 1  # Add some space between the table and next line of text
+                current_row += len(table) + 1  
 
     # Update current_row to max_row_position for writing text after tables
-    current_row = max_row_position
+    current_row = max(current_row, max_row_position)
 
-    # Apply font to maintain formatting
+    # Apply font to maintain formatting (Optimized to only apply to cells with data)
     for row in ws.iter_rows():
         for cell in row:
-            cell.font = Font(name='Times New Roman', size=11)
+            if cell.value is not None:
+                cell.font = Font(name='Times New Roman', size=11)
 
     return wb
+
 def write_tables_to_excel(tables, excel_path):
     """
     Write tables data to an Excel file.
