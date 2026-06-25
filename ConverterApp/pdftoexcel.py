@@ -627,7 +627,6 @@ def shutdown():
 
 def heartbeat_monitor():
     """Monitor heartbeat and shutdown server if no heartbeat received."""
-    global last_heartbeat
     logger.info(f"Heartbeat monitor started (timeout: {HEARTBEAT_TIMEOUT}s)")
 
     while not shutdown_event.is_set():
