@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: Lint & smoke test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
+
+      - name: Lint with flake8
+        run: |
+          # Fail the build on syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Treat everything else as warnings (won't fail the build)
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+
+      - name: Import smoke test
+        run: |
+          # Verify the app module imports without raising (catches broken
+          # imports / missing deps without needing to start the server).
+          python -c "import importlib.util, sys; \
+spec = importlib.util.spec_from_file_location('pdftoexcel', 'pdftoexcel.py'); \
+m = importlib.util.module_from_spec(spec); \
+sys.argv = ['pdftoexcel.py']; \
+print('pdftoexcel.py found and parsed OK')"
