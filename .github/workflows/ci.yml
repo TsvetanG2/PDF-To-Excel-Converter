@@ -38,12 +38,9 @@ jobs:
           # Treat everything else as warnings (won't fail the build)
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
 
-      - name: Import smoke test
+      - name: Syntax check
         run: |
-          # Verify the app module imports without raising (catches broken
-          # imports / missing deps without needing to start the server).
-          python -c "import importlib.util, sys; \
-spec = importlib.util.spec_from_file_location('pdftoexcel', 'pdftoexcel.py'); \
-m = importlib.util.module_from_spec(spec); \
-sys.argv = ['pdftoexcel.py']; \
-print('pdftoexcel.py found and parsed OK')"
+          # Verify the main app file compiles without executing it
+          # (importing would start the Flask server and hang the job).
+          python -m py_compile pdftoexcel.py
+          echo "pdftoexcel.py compiled OK"
