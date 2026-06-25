@@ -167,3 +167,100 @@ input[type="radio"] + label:after {
 input[type="radio"]:checked + label:after {
     transform: scale(1);
 }
+
+/* Drop Zone Styles */
+.drop-zone {
+    border: 3px dashed #158a9a;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.drop-zone:hover {
+    border-color: #0c6557;
+    background-color: #e8f4f4;
+}
+
+.drop-zone.dragover {
+    border-color: #70a10a;
+    background-color: #f0f8e0;
+}
+
+.drop-zone.has-file {
+    border-color: #70a10a;
+    background-color: #e8f5e9;
+    border-style: solid;
+}
+
+.drop-zone-text {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.drop-zone-text .browse-link {
+    color: #158a9a;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.drop-zone-text .browse-link:hover {
+    color: #0c6557;
+}
+
+.drop-zone-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.file-list {
+    margin-top: 15px;
+    text-align: left;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.file-item-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-item-name {
+    color: #333;
+    font-weight: bold;
+}
+
+.file-item-size {
+    color: #888;
+    font-size: 13px;
+}
+
+.file-item-remove {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.file-item-remove:hover {
+    background: #c0392b;
+}

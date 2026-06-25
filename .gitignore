@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.exe
+
+# Local scripts
+build.bat
+*.bat
+installer.iss
+
+# Logs and uploads (runtime data)
+ConverterApp/logs/
+ConverterApp/uploads/
+
+# Installer output
+ConverterApp/For Desktop/
+
+# Docker (optional - remove if you want to track)
+# Dockerfile
+# .dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local config
+*.local
+.env
+.env.*
+
+# Claude Code
+.claude/
