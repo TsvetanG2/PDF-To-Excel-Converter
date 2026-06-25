@@ -55,7 +55,7 @@ Users interact with the application by navigating to the main page, where they c
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/pdf-to-excel-converter.git
+    git clone https://github.com/TsvetanG2/pdf-to-excel-converter.git
     ```
 
 2. Navigate to the project directory:
