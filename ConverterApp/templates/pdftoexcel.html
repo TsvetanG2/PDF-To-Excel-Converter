@@ -4,16 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to Excel Converter</title>
-    <link rel="stylesheet" href="static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 <h1>PDF to Excel Converter</h1>
 
 <div class="container">
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label for="pdfFile" class="custom-file-upload">Choose a PDF file</label>
-        <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required>
-        <br>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">&#128196;</div>
+            <div class="drop-zone-text">
+                Drag & drop PDF files here or <span class="browse-link" id="browseLink">browse</span>
+            </div>
+            <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" multiple required>
+            <div class="file-list" id="fileList"></div>
+        </div>
 
         <p>Select processing option:</p>
         <input type="radio" id="allText" name="processingOption" value="allText" checked>
@@ -23,8 +29,137 @@
         <label for="tablesOnly">Only PDF Tables</label>
 
         <br>
-        <button type="submit">Convert to Excel</button>
+
+        <p>Select output format:</p>
+        <input type="radio" id="xlsx" name="outputFormat" value="xlsx" checked>
+        <label for="xlsx">Excel (.xlsx)</label>
+
+        <input type="radio" id="csv" name="outputFormat" value="csv">
+        <label for="csv">CSV (.csv)</label>
+
+        <input type="radio" id="json" name="outputFormat" value="json">
+        <label for="json">JSON (.json)</label>
+
+        <br>
+        <button type="submit">Convert</button>
     </form>
 </div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pdfFile');
+    const browseLink = document.getElementById('browseLink');
+    const fileListDiv = document.getElementById('fileList');
+
+    let selectedFiles = [];
+
+    // Click to browse
+    browseLink.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+    });
+
+    dropZone.addEventListener('click', (e) => {
+        if (e.target.classList.contains('file-item-remove')) return;
+        fileInput.click();
+    });
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    // Highlight on drag
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove('dragover');
+        });
+    });
+
+    // Handle drop
+    dropZone.addEventListener('drop', (e) => {
+        const files = [...e.dataTransfer.files].filter(f => f.type === 'application/pdf');
+        addFiles(files);
+    });
+
+    // Handle file input change
+    fileInput.addEventListener('change', () => {
+        addFiles([...fileInput.files]);
+    });
+
+    function addFiles(files) {
+        files.forEach(file => {
+            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                selectedFiles.push(file);
+            }
+        });
+        updateFileList();
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        updateFileList();
+    }
+
+    function updateFileList() {
+        if (selectedFiles.length === 0) {
+            fileListDiv.innerHTML = '';
+            dropZone.classList.remove('has-file');
+            return;
+        }
+
+        dropZone.classList.add('has-file');
+
+        fileListDiv.innerHTML = selectedFiles.map((file, index) => `
+            <div class="file-item">
+                <div class="file-item-info">
+                    <span>&#128196;</span>
+                    <span class="file-item-name">${file.name}</span>
+                    <span class="file-item-size">(${formatFileSize(file.size)})</span>
+                </div>
+                <button type="button" class="file-item-remove" onclick="removeFile(${index})">&times;</button>
+            </div>
+        `).join('');
+
+        // Update the file input
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // Heartbeat mechanism to keep server alive while browser is open
+    const HEARTBEAT_INTERVAL = 10000; // 10 seconds
+
+    function sendHeartbeat() {
+        fetch('/heartbeat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(() => {
+            // Server might be shutting down, ignore errors
+        });
+    }
+
+    // Start heartbeat immediately and repeat every 10 seconds
+    sendHeartbeat();
+    setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+
+    // Note: We rely only on heartbeat timeout for shutdown.
+    // beforeunload is not used because it fires on form submit/navigation too.
+</script>
 </body>
 </html>
