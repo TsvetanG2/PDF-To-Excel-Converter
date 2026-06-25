@@ -10,6 +10,10 @@ jobs:
   build:
     name: Lint & smoke test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # The Flask app and its requirements live in this subfolder
+        working-directory: ConverterApp
     strategy:
       fail-fast: false
       matrix:
