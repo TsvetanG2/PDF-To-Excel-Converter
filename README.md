@@ -1,5 +1,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+# Latest Update v0.2.0-demo -> v0.2.0
+## Release Notes 25/06/2026:
+- Added Auto-shutdown when browser closes (heartbeat mechanism to auto-shutdown server when browser closes)
+- Added Multi-file upload with ZIP download
+- Added CSV and JSON export formats
+- Added Drag & drop file upload
+- Added Desktop [installer for Windows](https://github.com/TsvetanG2/PDF-To-Excel-Converter/releases/download/v0.2.0/PDF-To-Excel-Converter-Setup-0.2.0.exe)
+- Nested server loops fix
+- Bug fixes
+- Increased speed and added multi-threading + logging
+- Added Rate limiting (10 req/min per IP)
+- Added Dockerfile for containerization
+
+
 # PDF to Excel Converter
 
 ## Introduction
