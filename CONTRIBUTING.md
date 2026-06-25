@@ -7,7 +7,7 @@ explains how to set up the project and submit changes.
 
 1. Fork the repository and clone your fork:
    ```bash
-   git clone https://github.com/<your-username>/PDF-To-Excel-Converter.git
+   git clone https://github.com/TsvetanG2/PDF-To-Excel-Converter.git
    cd PDF-To-Excel-Converter
    ```
 2. (Recommended) Create and activate a virtual environment:
