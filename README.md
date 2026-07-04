@@ -32,6 +32,11 @@ This mode extracts all textual content and tabular data from the PDF and consoli
 This mode focuses exclusively on identifying and extracting tabular data from the PDF. Each detected table is then organized into a separate sheet within the generated Excel workbook. This is particularly useful for PDFs where structured data in tables is the main interest.
 Users interact with the application by navigating to the main page, where they can upload a PDF file and choose their preferred extraction mode. Upon submission, the application processes the PDF, extracts the relevant content, generates an Excel file, and then offers it for download. The web application handles the file upload, initiates the conversion process, and manages the delivery of the final Excel output. The overall architecture is built around a Flask web application, which orchestrates these operations. For more details on the web application's structure and workflow, see Flask Application Structure and Workflow.
 
+# Design / UI / Screenshot
+
+<img width="690" height="700" alt="Screenshot 2026-07-04 030341" src="https://github.com/user-attachments/assets/783f7315-92e6-4288-ba89-385175bec40f" />
+
+
 ## Table of Contents
 
 - [Introduction](#introduction)
