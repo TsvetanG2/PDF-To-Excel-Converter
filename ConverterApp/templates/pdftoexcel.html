@@ -24,9 +24,13 @@
         <p>Select processing option:</p>
         <input type="radio" id="allText" name="processingOption" value="allText" checked>
         <label for="allText">PDF Text + Tables</label>
+        <br>
 
         <input type="radio" id="tablesOnly" name="processingOption" value="tablesOnly">
         <label for="tablesOnly">Only PDF Tables</label>
+
+        <input type="radio" id="singleSheet" name="processingOption" value="singleSheet">
+        <label for="singleSheet">Only PDF Tables Single Sheet</label>
 
         <br>
 
@@ -45,13 +49,89 @@
     </form>
 </div>
 
+<dialog
+    class="processing-modal"
+    id="processingModal"
+    aria-labelledby="processingTitle"
+    aria-describedby="processingMessage"
+>
+    <div class="processing-modal-content">
+        <div class="processing-spinner" id="processingSpinner" aria-hidden="true"></div>
+        <h2 id="processingTitle">Processing your files</h2>
+        <p id="processingMessage" role="status" aria-live="polite">Please wait while your files are converted.</p>
+        <button class="processing-modal-close" id="processingClose" type="button" hidden>Close</button>
+    </div>
+</dialog>
+
 <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('pdfFile');
     const browseLink = document.getElementById('browseLink');
     const fileListDiv = document.getElementById('fileList');
+    const uploadForm = document.getElementById('uploadForm');
+    const processingModal = document.getElementById('processingModal');
+    const processingMessage = document.getElementById('processingMessage');
+    const processingSpinner = document.getElementById('processingSpinner');
+    const processingClose = document.getElementById('processingClose');
+    const submitButton = uploadForm.querySelector('button[type="submit"]');
 
     let selectedFiles = [];
+    let isSubmitting = false;
+
+    uploadForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        submitButton.disabled = true;
+        processingSpinner.hidden = false;
+        processingClose.hidden = true;
+        processingMessage.textContent = selectedFiles.length === 1
+            ? 'Extracting content and preparing your download. This may take a moment.'
+            : `Processing ${selectedFiles.length} PDF files and preparing your download. This may take a moment.`;
+        processingModal.showModal();
+
+        try {
+            const response = await fetch(uploadForm.action, {
+                method: uploadForm.method,
+                body: new FormData(uploadForm)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || `Conversion failed (${response.status}).`);
+            }
+
+            const fileBlob = await response.blob();
+            const disposition = response.headers.get('Content-Disposition') || '';
+            const filenameMatch = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+            const filename = filenameMatch
+                ? decodeURIComponent(filenameMatch[1] || filenameMatch[2])
+                : 'converted_file';
+            const downloadUrl = URL.createObjectURL(fileBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = downloadUrl;
+            downloadLink.download = filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            downloadLink.remove();
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+            processingModal.close();
+        } catch (error) {
+            processingSpinner.hidden = true;
+            processingMessage.textContent = error.message || 'The files could not be converted. Please try again.';
+            processingClose.hidden = false;
+        } finally {
+            isSubmitting = false;
+            submitButton.disabled = false;
+        }
+    });
+
+    processingModal.addEventListener('cancel', (event) => {
+        if (isSubmitting) event.preventDefault();
+    });
+
+    processingClose.addEventListener('click', () => processingModal.close());
 
     // Click to browse
     browseLink.addEventListener('click', (e) => {

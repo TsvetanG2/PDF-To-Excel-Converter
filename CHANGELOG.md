@@ -10,7 +10,8 @@ and this project adheres to
 
 ### Added
 
-- (Add new features here as you build them.)
+- "Tables Only Single Sheet" mode: extracts each detected table into a single sheet, ie long table comprising several pages.
+- Web interface: Modal dialog showing 'work in progress...' for the anxious ones.
 
 ## [0.2.0-demo] - 2025-06-28
 

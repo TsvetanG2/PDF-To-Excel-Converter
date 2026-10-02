@@ -3,6 +3,7 @@ import sys
 import uuid
 import json
 import logging
+import locale
 import zipfile
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
@@ -15,6 +16,7 @@ import tabula
 import fitz
 import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
+from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
@@ -133,11 +135,37 @@ def extract_tables_from_pdf(pdf_path):
     """Extract tables from all pages of a PDF file using tabula-py."""
     logger.info(f"Extracting tables from: {pdf_path}")
     all_tables = []
+    header_columns = None
     try:
         with fitz.open(pdf_path) as doc:
             for page_num in range(len(doc)):
-                tables = tabula.read_pdf(pdf_path, pages=page_num + 1, multiple_tables=True)
+                read_options = {
+                    'pages': page_num + 1,
+                    'multiple_tables': True,
+                    'encoding': locale.getpreferredencoding(False),
+                }
+                if header_columns is not None:
+                    read_options['pandas_options'] = {'header': None}
+
+                tables = tabula.read_pdf(pdf_path, **read_options)
                 if tables:
+                    if header_columns is None:
+                        header_columns = [list(table.columns) for table in tables]
+                    else:
+                        for table_index, table in enumerate(tables):
+                            if table_index < len(header_columns):
+                                columns = header_columns[table_index]
+                            else:
+                                columns = []
+
+                            column_count = len(table.columns)
+                            table.columns = (
+                                columns[:column_count]
+                                + [
+                                    f'Columna {column_num}'
+                                    for column_num in range(len(columns) + 1, column_count + 1)
+                                ]
+                            )
                     all_tables.extend(tables)
         logger.info(f"Extracted {len(all_tables)} tables from {pdf_path}")
     except Exception as e:
@@ -223,44 +251,143 @@ def create_excel(text_content, table_data):
     return wb
 
 
-def write_tables_to_excel(tables, excel_path):
+def _table_cell_text_length(value, include_falsy_values):
+    if value is None:
+        return 0
+    if not include_falsy_values and not value:
+        return 0
+    return len(str(value))
+
+
+def _set_table_row_heights(sheet, include_falsy_values=True):
+    for row in sheet.iter_rows(
+        min_row=1,
+        max_row=sheet.max_row,
+        min_col=1,
+        max_col=sheet.max_column
+    ):
+        max_text_length = max(
+            _table_cell_text_length(cell.value, include_falsy_values)
+            for cell in row
+        )
+        sheet.row_dimensions[row[0].row].height = 35 + (max_text_length // 50) * 5
+
+
+def _write_table_headers(sheet, headers, title_font, alignment, header_fill, skip_empty=False):
+    for col_num, column_header in enumerate(headers, start=1):
+        if not skip_empty or column_header:
+            cell = sheet.cell(row=1, column=col_num, value=column_header)
+            cell.font = title_font
+            cell.alignment = alignment
+            cell.fill = header_fill
+            sheet.column_dimensions[get_column_letter(col_num)].width = max(
+                len(str(column_header)) + 2,
+                10
+            )
+
+
+def _update_table_column_width(sheet, col_num, value, ignore_none=False):
+    column_letter = get_column_letter(col_num)
+    current_width = sheet.column_dimensions[column_letter].width
+    if ignore_none and value is None:
+        return
+    sheet.column_dimensions[column_letter].width = max(current_width, len(str(value)) + 2)
+
+
+def _write_table_rows(sheet, rows, info_font, alignment, normalize_missing=False):
+    for row_num, row in enumerate(rows, start=2):
+        for col_num, value in enumerate(row, start=1):
+            if normalize_missing and pd.isna(value):
+                value = None
+            cell = sheet.cell(row=row_num, column=col_num, value=value)
+            cell.font = info_font
+            cell.alignment = alignment
+            _update_table_column_width(
+                sheet,
+                col_num,
+                value,
+                ignore_none=normalize_missing
+            )
+
+
+def _write_individual_table(sheet, table, title_font, info_font, alignment, header_fill):
+    dataframe = pd.DataFrame(
+        table.values,
+        columns=[column.title() if column else "" for column in table.columns]
+    )
+    _write_table_headers(
+        sheet,
+        dataframe.columns,
+        title_font,
+        alignment,
+        header_fill,
+        skip_empty=True
+    )
+    _write_table_rows(
+        sheet,
+        (row for _, row in dataframe.iterrows()),
+        info_font,
+        alignment
+    )
+
+    _set_table_row_heights(sheet, include_falsy_values=False)
+
+
+def _write_combined_table(sheet, dataframe, title_font, info_font, alignment, header_fill):
+    _write_table_headers(sheet, dataframe.columns, title_font, alignment, header_fill)
+    _write_table_rows(
+        sheet,
+        dataframe.itertuples(index=False, name=None),
+        info_font,
+        alignment,
+        normalize_missing=True
+    )
+    _set_table_row_heights(sheet)
+    sheet.freeze_panes = 'A2'
+    sheet.auto_filter.ref = sheet.dimensions
+
+
+def write_tables_to_excel(tables, excel_path, single_sheet=False):
     """Write tables data to an Excel file."""
     logger.info(f"Writing {len(tables)} tables to Excel: {excel_path}")
-    workbook = Workbook()
 
-    for table_num, table in enumerate(tables, start=1):
-        sheet = workbook.create_sheet(title=f'Table_{table_num}')
+    title_font = Font(name='Times New Roman', size=11, bold=True)
+    info_font = Font(name='Times New Roman', size=10)
+    alignment = Alignment(wrap_text=True, vertical='center')
+    header_fill = PatternFill(start_color='ffffff', end_color='ffffff', fill_type='solid')
 
-        title_font = Font(name='Times New Roman', size=11, bold=True)
-        info_font = Font(name='Times New Roman', size=10)
-        alignment = Alignment(wrap_text=True, vertical='center')
-        header_fill = PatternFill(start_color='ffffff', end_color='ffffff', fill_type='solid')
+    if single_sheet:
+        workbook = Workbook()
+        for table_num, table in enumerate(tables, start=1):
+            sheet = workbook.create_sheet(title=f'Table_{table_num}')
+            _write_individual_table(
+                sheet,
+                table,
+                title_font,
+                info_font,
+                alignment,
+                header_fill
+            )
+        workbook.remove(workbook.active)
+    else:
+        table_frames = [
+            pd.DataFrame(table.values, columns=table.columns)
+            for table in tables
+        ]
+        combined = pd.concat(table_frames, ignore_index=True, sort=False)
 
-        df = pd.DataFrame(table.values, columns=[col.title() if col else "" for col in table.columns])
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = 'Tablas'
+        _write_combined_table(
+            sheet,
+            combined,
+            title_font,
+            info_font,
+            alignment,
+            header_fill
+        )
 
-        for col_num, column_header in enumerate(df.columns, start=1):
-            if column_header:
-                cell = sheet.cell(row=1, column=col_num, value=column_header)
-                cell.font = title_font
-                cell.alignment = alignment
-                cell.fill = header_fill
-                sheet.column_dimensions[get_column_letter(col_num)].width = max(len(str(column_header)) + 2, 10)
-
-        for row_num, (_, row) in enumerate(df.iterrows(), start=2):
-            for col_num, value in enumerate(row, start=1):
-                cell = sheet.cell(row=row_num, column=col_num, value=value)
-                cell.font = info_font
-                cell.alignment = alignment
-                current_width = sheet.column_dimensions[get_column_letter(col_num)].width
-                sheet.column_dimensions[get_column_letter(col_num)].width = max(
-                    current_width, len(str(value)) + 2
-                )
-
-        for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
-            max_text_length = max(len(str(cell.value)) if cell.value else 0 for cell in row)
-            sheet.row_dimensions[row[0].row].height = 35 + (max_text_length // 50) * 5
-
-    workbook.remove(workbook.active)
     workbook.save(excel_path)
     logger.info(f"Excel file saved: {excel_path}")
 
@@ -338,7 +465,7 @@ def process_pdf_job(job_id, filepath, processing_option, output_format='xlsx'):
             else:
                 raise ValueError(f"Unsupported format: {output_format}")
 
-        elif processing_option == 'tablesOnly':
+        elif processing_option == 'tablesOnly' or processing_option == 'singleSheet':
             tables = extract_tables_from_pdf(filepath)
 
             with jobs_lock:
@@ -354,7 +481,7 @@ def process_pdf_job(job_id, filepath, processing_option, output_format='xlsx'):
 
             if output_format == 'xlsx':
                 output_path = os.path.join(app.config['UPLOAD_FOLDER'], f'{base_name}_tables.xlsx')
-                write_tables_to_excel(tables, output_path)
+                write_tables_to_excel(tables, output_path, (processing_option == 'singleSheet'))
             elif output_format == 'csv':
                 output_path = os.path.join(app.config['UPLOAD_FOLDER'], f'{base_name}_tables.csv')
                 all_data = []
@@ -475,7 +602,7 @@ def upload():
                 elif output_format == 'json':
                     create_json(text_content, table_data, output_path)
 
-            elif processing_option == 'tablesOnly':
+            elif processing_option == 'tablesOnly' or processing_option == 'singleSheet':
                 tables = extract_tables_from_pdf(pdf_filepath)
                 if tables:
                     if output_format == 'xlsx':
@@ -670,9 +797,10 @@ def internal_error(error):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    import traceback
-    traceback.print_exc()
+    if isinstance(e, HTTPException):
+        return e.get_response()
 
+    logger.exception("Unhandled application error")
     return jsonify({
         'error': str(e)
     }), 500
